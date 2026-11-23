@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G-CyberRPcore // Neural Inventory Matrix</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="inventory-app" class="inventory-root hidden">
+    <!-- Cyberpunk Scanline & Vignette Overlay -->
+    <div class="hud-scanlines"></div>
+    <div class="hud-noise"></div>
+
+    <!-- Top Status Header -->
+    <header class="inv-header">
+      <div class="header-branding">
+        <span class="cyber-glitch-badge">NETWATCH SECURE</span>
+        <h1 class="inv-title">NEURAL INVENTORY MATRIX <span class="accent-sub">v2.077</span></h1>
+      </div>
+      <div class="header-controls">
+        <div class="header-time" id="hud-clock">23:00</div>
+        <button class="btn-close" id="btn-close-inv" title="Close Inventory (ESC / TAB)">✕</button>
+      </div>
+    </header>
+
+    <!-- Main Dual Grid Layout -->
+    <main class="inv-main">
+      <!-- LEFT: Player Pocket Grid -->
+      <section class="inv-panel panel-player">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <span class="panel-icon">👤</span>
+            <div>
+              <h2 class="panel-title" id="player-name">CITIZEN POCKETS</h2>
+              <span class="panel-id" id="player-id">ID: NC-0000</span>
+            </div>
+          </div>
+          <div class="panel-weight-wrap">
+            <div class="weight-labels">
+              <span>CAPACITY</span>
+              <span id="player-weight-txt">0.0 / 120.0 KG</span>
+            </div>
+            <div class="weight-bar-bg">
+              <div class="weight-bar-fill" id="player-weight-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotbar Quickslots (1 - 5) -->
+        <div class="hotbar-section">
+          <span class="hotbar-label">TACTICAL QUICKSLOTS [1 - 5]</span>
+          <div class="hotbar-grid" id="player-hotbar-grid">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Main Pockets Grid (6 - 35) -->
+        <div class="slots-container">
+          <div class="slots-grid" id="player-slots-grid">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: Secondary Container (Trunk / Glovebox / Stash / Ground Drop) -->
+      <section class="inv-panel panel-container">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <span class="panel-icon" id="container-icon">📦</span>
+            <div>
+              <h2 class="panel-title" id="container-name">LOCAL STORAGE</h2>
+              <span class="panel-id" id="container-id">STANDBY</span>
+            </div>
+          </div>
+          <div class="panel-weight-wrap">
+            <div class="weight-labels">
+              <span>STORAGE</span>
+              <span id="container-weight-txt">0.0 / 150.0 KG</span>
+            </div>
+            <div class="weight-bar-bg">
+              <div class="weight-bar-fill fill-container" id="container-weight-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Container Grid Slots -->
+        <div class="slots-container">
+          <div class="slots-grid" id="container-slots-grid">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Empty Standby Screen if no container open -->
+          <div class="standby-overlay hidden" id="container-standby">
+            <div class="standby-icon">📡</div>
+            <h3>NO ACTIVE CONTAINER LINK</h3>
+            <p>Approach a vehicle trunk, glovebox, apartment stash, or ground drop to link hardware.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Item Context Action Modal / Detail Popup -->
+    <div class="item-modal hidden" id="item-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <span class="modal-item-icon" id="modal-icon">📦</span>
+          <div>
+            <h3 class="modal-item-title" id="modal-title">Item Name</h3>
+            <span class="modal-item-cat" id="modal-category">CATEGORY</span>
+          </div>
+          <button class="modal-close-btn" id="modal-close-btn">✕</button>
+        </div>
+        <p class="modal-item-desc" id="modal-desc">Item description lore text...</p>
+        <div class="modal-stats">
+          <div class="stat-badge">
+            <span class="stat-name">UNIT WEIGHT</span>
+            <span class="stat-val" id="modal-weight">1.0 KG</span>
+          </div>
+          <div class="stat-badge">
+            <span class="stat-name">COUNT</span>
+            <span class="stat-val" id="modal-count">x1</span>
+          </div>
+        </div>
+
+        <!-- Split Stack Slider -->
+        <div class="split-slider-wrap hidden" id="split-wrap">
+          <label>TRANSFER AMOUNT: <span id="split-val-txt">1</span></label>
+          <input type="range" min="1" max="100" value="1" id="split-slider">
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-action btn-use" id="btn-modal-use">USE</button>
+          <button class="btn-action btn-split" id="btn-modal-split">SPLIT</button>
+          <button class="btn-action btn-drop" id="btn-modal-drop">DROP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "@g-cyberrpcore/inventory",
+  "version": "1.0.0",
+  "description": "Advanced Multi-Container Drag & Drop Inventory & Cyberware Engine for CyberMP",
+  "main": "server.js",
+  "scripts": {
+    "test": "node --check server.js && node --check client.js && node --check config.js && node --check shared/items.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/G-CyberRPcore/gcyber-inventory.git"
+  },
+  "keywords": [
+    "cybermp",
+    "cyberpunk2077",
+    "inventory",
+    "roleplay",
+    "g-cyberrpcore"
+  ],
+  "author": "G-CyberRPcore Team",
+  "license": "MIT"
+}
