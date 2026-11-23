@@ -98,7 +98,40 @@ if (typeof mp !== 'undefined' && mp.events) {
     const KEY_TAB = 9;
     const KEY_I = 73;
 
-    // Check if mp.keys exists
+    // CyberMP Native Key Handling (onInputKeyEvent)
+    try {
+      if (mp.game && typeof mp.game.onInit === 'function') {
+        mp.game.onInit(() => {
+          try {
+            if (typeof mp.game.onInputKeyEvent === 'function') {
+              mp.game.onInputKeyEvent((action, key) => {
+                if (action === 1) { // Press
+                  if (key === 9 || key === 73) { // Tab or I
+                    toggleInventory();
+                  } else if (key === 27 && isInventoryOpen) { // ESC
+                    toggleInventory(false);
+                  } else if (key >= 49 && key <= 53 && !isInventoryOpen) {
+                    if (mp.events && typeof mp.events.emitServer === 'function') {
+                      mp.events.emitServer('gcyber:inventory:serverUseItem', key - 49);
+                    }
+                  }
+                }
+              });
+            }
+          } catch (e1) {}
+        });
+      }
+    } catch (e) {}
+
+    // Register Commands (/inv, /inventory)
+    try {
+      if (mp.commands && typeof mp.commands.add === 'function') {
+        mp.commands.add('inv', () => toggleInventory());
+        mp.commands.add('inventory', () => toggleInventory());
+      }
+    } catch (e2) {}
+
+    // Fallback: Check if mp.keys exists
     if (typeof mp.keys !== 'undefined' && typeof mp.keys.bind === 'function') {
       mp.keys.bind(KEY_TAB, false, () => toggleInventory());
       mp.keys.bind(KEY_I, false, () => toggleInventory());
