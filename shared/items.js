@@ -1,9 +1,12 @@
 // =====================================================================
-// G-CyberRPcore Ecosystem - Items Registry
+// G-CyberRPcore Ecosystem - Master Item Registry
 // Verified against CyberMP Developer Wiki (punkmp.wiki/items)
 // =====================================================================
 
-const Items = {
+const fs = require('fs');
+const path = require('path');
+
+const CuratedItems = {
   // --- MEDICAL & PHARMACEUTICALS ---
   maxdoc_mk1: {
     id: 'maxdoc_mk1',
@@ -11,15 +14,16 @@ const Items = {
     label: 'MaxDoc Mk.1 Inhaler',
     category: 'medicine',
     type: 'medical',
-    weight: 0.3,
+    weight: 0.25,
     stackable: true,
     maxStack: 10,
-    nativeId: 'Items.FirstAidMedkit',
+    nativeId: 'Items.FirstAidWhiffV0',
     usable: true,
     useable: true,
     healAmount: 40,
     consumeEffect: { health: 40, hunger: 0, thirst: 0, stress: -10 },
     icon: '💉',
+    image: './assets/items/FirstAidWhiffV0.webp',
     description: 'Trauma Team standard emergency medical inhaler. Restores 40% health instantly.'
   },
   maxdoc_mk2: {
@@ -28,16 +32,35 @@ const Items = {
     label: 'MaxDoc Mk.2 Inhaler',
     category: 'medicine',
     type: 'medical',
-    weight: 0.4,
+    weight: 0.3,
     stackable: true,
-    maxStack: 5,
-    nativeId: 'Items.FirstAidMedkitCurative',
+    maxStack: 8,
+    nativeId: 'Items.FirstAidWhiffVUncommon',
     usable: true,
     useable: true,
     healAmount: 70,
     consumeEffect: { health: 70, hunger: 0, thirst: 0, stress: -15 },
     icon: '💉',
+    image: './assets/items/FirstAidWhiffVUncommon.webp',
     description: 'Military-grade medical inhaler restoring 70% health.'
+  },
+  maxdoc_mk3: {
+    id: 'maxdoc_mk3',
+    name: 'maxdoc_mk3',
+    label: 'MaxDoc Mk.3 Inhaler',
+    category: 'medicine',
+    type: 'medical',
+    weight: 0.35,
+    stackable: true,
+    maxStack: 5,
+    nativeId: 'Items.FirstAidWhiffV1',
+    usable: true,
+    useable: true,
+    healAmount: 90,
+    consumeEffect: { health: 90, hunger: 0, thirst: 0, stress: -20 },
+    icon: '💉',
+    image: './assets/items/FirstAidWhiffV1.webp',
+    description: 'Combat trauma grade MaxDoc injector restoring 90% vitality.'
   },
   bounce_back_mk1: {
     id: 'bounce_back_mk1',
@@ -48,154 +71,250 @@ const Items = {
     weight: 0.2,
     stackable: true,
     maxStack: 10,
-    nativeId: 'Items.BonesMcCoy',
+    nativeId: 'Items.BonesMcCoy70V0',
     usable: true,
     useable: true,
+    healAmount: 30,
     consumeEffect: { health: 30, hunger: 0, thirst: 0, stress: -5 },
     icon: '🩸',
-    description: 'Subcutaneous injector that accelerates tissue regeneration.'
+    image: './assets/items/BonesMcCoy70V0.webp',
+    description: 'Subcutaneous injector that accelerates tissue regeneration (+30% HP).'
   },
   bandage: {
     id: 'bandage',
     name: 'bandage',
-    label: 'Synthetic Hemostatic Dressing',
+    label: 'Health Booster',
     category: 'medicine',
-    type: 'medical',
-    weight: 0.1,
+    type: 'booster',
+    weight: 0.15,
     stackable: true,
     maxStack: 20,
     nativeId: 'Items.HealthBooster',
     usable: true,
     useable: true,
-    consumeEffect: { health: 15, hunger: 0, thirst: 0, stress: 0 },
+    healAmount: 25,
+    consumeEffect: { health: 25, hunger: 0, thirst: 0, stress: 0 },
     icon: '🩹',
-    description: 'Stops heavy bleeding and stabilizes wounded limbs.'
+    image: './assets/items/HealthBooster.webp',
+    description: 'Stabilizes vitals and boosts tissue recovery (+25% HP).'
+  },
+  stamina_booster: {
+    id: 'stamina_booster',
+    name: 'stamina_booster',
+    label: 'Stamina Booster',
+    category: 'medicine',
+    type: 'booster',
+    weight: 0.15,
+    stackable: true,
+    maxStack: 10,
+    nativeId: 'Items.StaminaBooster',
+    usable: true,
+    useable: true,
+    consumeEffect: { health: 5, hunger: 0, thirst: -5, stress: -15 },
+    icon: '⚡',
+    image: './assets/items/StaminaBooster.webp',
+    description: 'Metabolic combat stimulant that reduces fatigue and neural stress.'
+  },
+  capacity_booster: {
+    id: 'capacity_booster',
+    name: 'capacity_booster',
+    label: 'Capacity Booster',
+    category: 'medicine',
+    type: 'booster',
+    weight: 0.15,
+    stackable: true,
+    maxStack: 10,
+    nativeId: 'Items.CarryCapacityBooster',
+    usable: true,
+    useable: true,
+    consumeEffect: { health: 10, hunger: 0, thirst: 0, stress: -5 },
+    icon: '💊',
+    image: './assets/items/CarryCapacityBooster.webp',
+    description: 'Musculoskeletal enhancer temporarily increasing stamina and load resilience.'
   },
 
   // --- FOOD & NUTRITION ---
   synth_burger: {
     id: 'synth_burger',
     name: 'synth_burger',
-    label: 'Synthetic Beef Burger',
+    label: 'EEZYBEEF Synth Pack',
     category: 'food',
     type: 'food',
     weight: 0.35,
     stackable: true,
-    maxStack: 10,
-    nativeId: 'Items.Burger',
+    maxStack: 15,
+    nativeId: 'Items.LowQualityFood1',
     usable: true,
     useable: true,
     consumeEffect: { health: 5, hunger: 35, thirst: 0, stress: -5 },
     icon: '🍔',
-    description: 'AllFoods certified processed protein patty on soy bun.'
+    image: './assets/items/LowQualityFood1.webp',
+    description: 'AllFoods certified synthetic protein meal. Restores 35% Hunger.'
+  },
+  allfoods_delight: {
+    id: 'allfoods_delight',
+    name: 'allfoods_delight',
+    label: 'All Foods Meat Delight',
+    category: 'food',
+    type: 'food',
+    weight: 0.4,
+    stackable: true,
+    maxStack: 10,
+    nativeId: 'Items.MediumQualityFood5',
+    usable: true,
+    useable: true,
+    consumeEffect: { health: 10, hunger: 45, thirst: 0, stress: -5 },
+    icon: '🥩',
+    image: './assets/items/MediumQualityFood5.webp',
+    description: 'Nutrient-dense cultured meat platter. Restores 45% Hunger.'
   },
   burrito_xxl: {
     id: 'burrito_xxl',
     name: 'burrito_xxl',
-    label: 'Chupacabra XXL Burrito',
+    label: 'Burrito XXL',
     category: 'food',
     type: 'food',
     weight: 0.5,
     stackable: true,
-    maxStack: 5,
-    nativeId: 'Items.Burrito',
+    maxStack: 10,
+    nativeId: 'Items.MediumQualityFood4',
     usable: true,
     useable: true,
     consumeEffect: { health: 10, hunger: 55, thirst: -5, stress: -5 },
     icon: '🌯',
-    description: 'Massive street-vendor burrito loaded with synthesized beans and artificial salsa.'
+    image: './assets/items/MediumQualityFood4.webp',
+    description: 'Massive Night City vending machine burrito. Restores 55% Hunger.'
   },
   ramen_pack: {
     id: 'ramen_pack',
     name: 'ramen_pack',
-    label: 'Kabuki Instant Ramen',
+    label: 'RaMMMMen Cup',
     category: 'food',
     type: 'food',
-    weight: 0.2,
+    weight: 0.25,
     stackable: true,
     maxStack: 15,
-    nativeId: 'Items.GoodQualityFood',
+    nativeId: 'Items.MediumQualityFood2',
     usable: true,
     useable: true,
-    consumeEffect: { health: 5, hunger: 25, thirst: 0, stress: -5 },
+    consumeEffect: { health: 5, hunger: 30, thirst: 10, stress: -5 },
     icon: '🍜',
-    description: 'Classic freeze-dried noodles. Just add heated mineral water.'
+    image: './assets/items/MediumQualityFood2.webp',
+    description: 'Classic Kabuki hot noodle broth. Restores 30% Hunger and 10% Thirst.'
+  },
+  pizza_slice: {
+    id: 'pizza_slice',
+    name: 'pizza_slice',
+    label: 'Locust Pepperoni Pizza',
+    category: 'food',
+    type: 'food',
+    weight: 0.45,
+    stackable: true,
+    maxStack: 10,
+    nativeId: 'Items.GoodQualityFood10',
+    usable: true,
+    useable: true,
+    consumeEffect: { health: 15, hunger: 60, thirst: 0, stress: -10 },
+    icon: '🍕',
+    image: './assets/items/GoodQualityFood10.webp',
+    description: 'Crispy synthetic-cheese and locust pepperoni pie. Restores 60% Hunger.'
   },
 
   // --- DRINKS & HYDRATION ---
   water_bottle: {
     id: 'water_bottle',
     name: 'water_bottle',
-    label: 'Purified Water (500ml)',
+    label: 'Purified Water',
     category: 'drink',
     type: 'drink',
-    weight: 0.5,
+    weight: 0.4,
     stackable: true,
-    maxStack: 10,
-    nativeId: 'Items.Water',
+    maxStack: 15,
+    nativeId: 'Items.GoodQualityDrink10',
     usable: true,
     useable: true,
     consumeEffect: { health: 5, hunger: 0, thirst: 45, stress: -5 },
     icon: '💧',
-    description: 'Filtered Night City tap water. Guaranteed 99.4% heavy-metal free.'
+    image: './assets/items/GoodQualityDrink10.webp',
+    description: 'Filtered Night City drinking water. Restores 45% Thirst.'
   },
   nicola_blue: {
     id: 'nicola_blue',
     name: 'nicola_blue',
-    label: 'NiCola Blue (Original)',
+    label: 'NiCola Blue',
     category: 'drink',
     type: 'drink',
     weight: 0.35,
     stackable: true,
     maxStack: 12,
-    nativeId: 'Items.Soda',
+    nativeId: 'Items.LowQualityDrink9',
     usable: true,
     useable: true,
     consumeEffect: { health: 0, hunger: 0, thirst: 35, stress: -10 },
     icon: '🥤',
-    description: 'Taste the love! The sweetest carbonated beverage in Night City.'
+    image: './assets/items/LowQualityDrink9.webp',
+    description: 'Taste the love! Refreshing carbonated soda restoring 35% Thirst.'
   },
   spunky_monkey: {
     id: 'spunky_monkey',
     name: 'spunky_monkey',
-    label: 'Spunky Monkey Energy Drink',
+    label: 'Spunky Monkey',
     category: 'drink',
     type: 'drink',
     weight: 0.35,
     stackable: true,
     maxStack: 10,
-    nativeId: 'Items.EnergyDrink',
+    nativeId: 'Items.LowQualityDrink4',
     usable: true,
     useable: true,
     consumeEffect: { health: 0, hunger: 0, thirst: 30, stress: 5 },
     icon: '⚡',
-    description: 'Extreme caffeine and taurine stimulant drink with neon green coloring.'
+    image: './assets/items/LowQualityDrink4.webp',
+    description: 'Extreme caffeine and taurine energy drink restoring 30% Thirst.'
+  },
+  coffee: {
+    id: 'coffee',
+    name: 'coffee',
+    label: 'Night City Coffee',
+    category: 'drink',
+    type: 'drink',
+    weight: 0.3,
+    stackable: true,
+    maxStack: 10,
+    nativeId: 'Items.LowQualityDrink11',
+    usable: true,
+    useable: true,
+    consumeEffect: { health: 0, hunger: 0, thirst: 25, stress: -15 },
+    icon: '☕',
+    image: './assets/items/LowQualityDrink11.webp',
+    description: 'Hot synthetic espresso shot to clear fatigue and lower stress.'
   },
   silverhand_tequila: {
     id: 'silverhand_tequila',
     name: 'silverhand_tequila',
-    label: 'Centzon Totochtin Tequila',
-    category: 'drink',
-    type: 'drink',
-    weight: 1.0,
-    stackable: false,
-    maxStack: 1,
-    nativeId: 'Items.Tequila',
+    label: 'Johnny Silverhand Tequila',
+    category: 'alcohol',
+    type: 'alcohol',
+    weight: 0.8,
+    stackable: true,
+    maxStack: 5,
+    nativeId: 'Items.TopQualityAlcohol8',
     usable: true,
     useable: true,
-    consumeEffect: { health: 0, hunger: 0, thirst: 15, stress: -30 },
+    consumeEffect: { health: 0, hunger: 0, thirst: 15, stress: -35 },
     icon: '🍾',
-    description: 'Johnny Silverhand’s signature drink ingredient: spicy tequila with a chili rim.'
+    image: './assets/items/TopQualityAlcohol8.webp',
+    description: 'Afterlife signature tequila old-fashioned with beer float and chili.'
   },
 
-  // --- WEAPONS (VERIFIED ON PUNKMP WIKI) ---
+  // --- WEAPONS (VERIFIED ON PUNKMP.WIKI) ---
   weapon_unity: {
     id: 'weapon_unity',
     name: 'weapon_unity',
-    label: 'Constitutional Arms Unity (9mm)',
+    label: 'Constitutional Arms Unity',
     category: 'weapon',
     type: 'weapon',
-    weight: 2.2,
+    weight: 1.8,
     stackable: false,
     maxStack: 1,
     nativeId: 'Items.Preset_Unity_Default',
@@ -203,15 +322,16 @@ const Items = {
     usable: true,
     useable: true,
     icon: '🔫',
-    description: 'Reliable, mass-produced semi-automatic pistol popular among Night City security.'
+    image: './assets/items/Preset_Unity_Default.webp',
+    description: 'Reliable 9mm semi-automatic power pistol. Click USE or press Quickslot [1-5] to draw.'
   },
   weapon_lexington: {
     id: 'weapon_lexington',
     name: 'weapon_lexington',
-    label: 'Militech M-10AF Lexington',
+    label: 'M-10AF Lexington',
     category: 'weapon',
     type: 'weapon',
-    weight: 2.0,
+    weight: 1.7,
     stackable: false,
     maxStack: 1,
     nativeId: 'Items.Preset_Lexington_Default',
@@ -219,31 +339,33 @@ const Items = {
     usable: true,
     useable: true,
     icon: '🔫',
-    description: 'Fast-firing tactical combat handgun.'
+    image: './assets/items/Preset_Lexington_Default.webp',
+    description: 'Militech full-auto tactical combat handgun. Uses Handgun Ammo.'
   },
   weapon_copperhead: {
     id: 'weapon_copperhead',
     name: 'weapon_copperhead',
-    label: 'Nokota D5 Copperhead Rifle',
+    label: 'D5 Copperhead Rifle',
     category: 'weapon',
     type: 'weapon',
-    weight: 4.8,
+    weight: 4.2,
     stackable: false,
     maxStack: 1,
     nativeId: 'Items.Preset_Copperhead_Default',
     ammoType: 'ammo_rifle',
     usable: true,
     useable: true,
-    icon: '🗡️',
-    description: 'Durable assault rifle favored by Nomad clans and street mercenaries.'
+    icon: '🔫',
+    image: './assets/items/Preset_Copperhead_Default.webp',
+    description: 'Nokota D5 Copperhead power assault rifle. Uses Rifle Ammo.'
   },
   weapon_carnage: {
     id: 'weapon_carnage',
     name: 'weapon_carnage',
-    label: 'Budget Arms Carnage Shotgun',
+    label: 'Budget Arms Carnage',
     category: 'weapon',
     type: 'weapon',
-    weight: 7.2,
+    weight: 5.5,
     stackable: false,
     maxStack: 1,
     nativeId: 'Items.Preset_Carnage_Default',
@@ -251,15 +373,33 @@ const Items = {
     usable: true,
     useable: true,
     icon: '💥',
-    description: 'Brutal pump-action shotgun packing massive kinetic stopping power.'
+    image: './assets/items/Preset_Carnage_Default.webp',
+    description: 'Heavy pump-action power shotgun. Uses Shotgun Shells.'
+  },
+  weapon_grad: {
+    id: 'weapon_grad',
+    name: 'weapon_grad',
+    label: 'SPT32 Grad Sniper',
+    category: 'weapon',
+    type: 'weapon',
+    weight: 6.5,
+    stackable: false,
+    maxStack: 1,
+    nativeId: 'Items.Preset_Grad_Default',
+    ammoType: 'ammo_sniper',
+    usable: true,
+    useable: true,
+    icon: '🎯',
+    image: './assets/items/Preset_Grad_Default.webp',
+    description: 'Techtronika heavy armor-piercing sniper rifle. Uses Sniper Rounds.'
   },
   weapon_katana: {
     id: 'weapon_katana',
     name: 'weapon_katana',
-    label: 'Arasaka Steel Katana',
+    label: 'Carbon Steel Katana',
     category: 'weapon',
     type: 'weapon',
-    weight: 2.5,
+    weight: 2.2,
     stackable: false,
     maxStack: 1,
     nativeId: 'Items.Preset_Katana_Default',
@@ -267,72 +407,181 @@ const Items = {
     usable: true,
     useable: true,
     icon: '⚔️',
-    description: 'Folded carbon steel blade honed to monomolecular edge.'
+    image: './assets/items/Preset_Katana_Default.webp',
+    description: 'Precision-forged monomolecular katana blade.'
   },
 
-  // --- AMMUNITION ---
+  // --- GRENADES ---
+  grenade_frag: {
+    id: 'grenade_frag',
+    name: 'grenade_frag',
+    label: 'F-GX Frag Grenade',
+    category: 'grenade',
+    type: 'grenade',
+    weight: 0.45,
+    stackable: true,
+    maxStack: 10,
+    nativeId: 'Items.GrenadeFragRegular',
+    usable: true,
+    useable: true,
+    icon: '💣',
+    image: './assets/items/GrenadeFragRegular.webp',
+    description: 'High-explosive fragmentation grenade. Click USE to equip to throw slot [G].'
+  },
+  grenade_emp: {
+    id: 'grenade_emp',
+    name: 'grenade_emp',
+    label: 'EMP Grenade',
+    category: 'grenade',
+    type: 'grenade',
+    weight: 0.45,
+    stackable: true,
+    maxStack: 10,
+    nativeId: 'Items.GrenadeEMPRegular',
+    usable: true,
+    useable: true,
+    icon: '⚡',
+    image: './assets/items/GrenadeEMPRegular.webp',
+    description: 'Electromagnetic pulse grenade disabling cyberware and drones. Press [G] to throw.'
+  },
+  grenade_smoke: {
+    id: 'grenade_smoke',
+    name: 'grenade_smoke',
+    label: 'Smoke Grenade',
+    category: 'grenade',
+    type: 'grenade',
+    weight: 0.4,
+    stackable: true,
+    maxStack: 10,
+    nativeId: 'Items.GrenadeSmokeRegular',
+    usable: true,
+    useable: true,
+    icon: '💨',
+    image: './assets/items/GrenadeSmokeRegular.webp',
+    description: 'Tactical visual concealment smoke canister. Press [G] to throw.'
+  },
+
+  // --- AMMUNITION (SYNCED & USABLE) ---
   ammo_handgun: {
     id: 'ammo_handgun',
     name: 'ammo_handgun',
-    label: 'Pistol Ammo (50x)',
+    label: 'Handgun Ammo',
     category: 'ammo',
     type: 'ammo',
-    weight: 0.6,
+    weight: 0.015,
     stackable: true,
-    maxStack: 200,
+    maxStack: 300,
+    roundsPerUse: 15,
     nativeId: 'Ammo.HandgunAmmo',
-    usable: false,
-    useable: false,
+    usable: true,
+    useable: true,
     icon: '📦',
-    description: 'Box of standard 9x19mm power rounds.'
+    image: './assets/items/HandgunAmmo.webp',
+    description: 'Standard 9x19mm handgun cartridges. Auto-loads pistols or click USE to load 15 rounds.'
   },
   ammo_rifle: {
     id: 'ammo_rifle',
     name: 'ammo_rifle',
-    label: 'Rifle Cartridges (60x)',
+    label: 'Rifle Ammo',
     category: 'ammo',
     type: 'ammo',
-    weight: 1.1,
+    weight: 0.02,
     stackable: true,
-    maxStack: 240,
+    maxStack: 360,
+    roundsPerUse: 30,
     nativeId: 'Ammo.RifleAmmo',
-    usable: false,
-    useable: false,
+    usable: true,
+    useable: true,
     icon: '📦',
-    description: 'High-velocity 5.56mm caseless rifle cartridges.'
+    image: './assets/items/RifleAmmo.webp',
+    description: '5.56mm caseless assault rifle & SMG cartridges. Auto-loads rifles or click USE to load 30 rounds.'
   },
   ammo_shotgun: {
     id: 'ammo_shotgun',
     name: 'ammo_shotgun',
-    label: 'Shotgun Shells (20x)',
+    label: 'Shotgun Shells',
     category: 'ammo',
     type: 'ammo',
-    weight: 0.8,
+    weight: 0.035,
+    stackable: true,
+    maxStack: 120,
+    roundsPerUse: 8,
+    nativeId: 'Ammo.ShotgunAmmo',
+    usable: true,
+    useable: true,
+    icon: '📦',
+    image: './assets/items/ShotgunAmmo.webp',
+    description: '12-gauge kinetic buckshot shells. Auto-loads shotguns or click USE to load 8 shells.'
+  },
+  ammo_sniper: {
+    id: 'ammo_sniper',
+    name: 'ammo_sniper',
+    label: 'Sniper Rounds',
+    category: 'ammo',
+    type: 'ammo',
+    weight: 0.04,
     stackable: true,
     maxStack: 100,
-    nativeId: 'Ammo.ShotgunAmmo',
-    usable: false,
-    useable: false,
+    roundsPerUse: 10,
+    nativeId: 'Ammo.SniperRifleAmmo',
+    usable: true,
+    useable: true,
     icon: '📦',
-    description: 'Heavy gauge kinetic buckshot shells.'
+    image: './assets/items/SniperRifleAmmo.webp',
+    description: 'High-caliber armor-piercing rounds. Auto-loads snipers or click USE to load 10 rounds.'
+  },
+
+  // --- WEAPON ATTACHMENTS & MODS ---
+  silencer_taipan: {
+    id: 'silencer_taipan',
+    name: 'silencer_taipan',
+    label: 'CS-1 Taipan Silencer',
+    category: 'mod',
+    type: 'mod',
+    weight: 0.25,
+    stackable: true,
+    maxStack: 5,
+    nativeId: 'Items.w_silencer_01',
+    usable: true,
+    useable: true,
+    icon: '🔇',
+    image: './assets/items/w_silencer_01.webp',
+    description: 'Muzzle sound suppressor. Hold your weapon and click USE to install.'
+  },
+  scope_short: {
+    id: 'scope_short',
+    name: 'scope_short',
+    label: 'Add-Vantage Reflex Sight',
+    category: 'mod',
+    type: 'mod',
+    weight: 0.2,
+    stackable: true,
+    maxStack: 5,
+    nativeId: 'Items.w_att_scope_short_03',
+    usable: true,
+    useable: true,
+    icon: '🔭',
+    image: './assets/items/w_att_scope_short_03.webp',
+    description: 'Compact holographic optic. Hold your weapon and click USE to attach.'
   },
 
   // --- CYBERWARE & OPERATING SYSTEMS ---
   cyberdeck_paraline: {
     id: 'cyberdeck_paraline',
     name: 'cyberdeck_paraline',
-    label: 'Militech Paraline Cyberdeck Mk.2',
+    label: 'Militech Paraline Cyberdeck',
     category: 'cyberware',
     type: 'cyberware',
     slotType: 'os',
-    weight: 1.2,
+    weight: 1.0,
     stackable: false,
     maxStack: 1,
     nativeId: 'Items.CyberdeckC1',
     usable: true,
     useable: true,
     icon: '💾',
-    description: 'Entry-level netrunning deck featuring 6 RAM slots and quickhack buffer.'
+    image: './assets/items/rp_cyberdeck.svg',
+    description: 'Entry-level netrunning deck featuring quickhack buffer slots.'
   },
   sandevistan_dynalar: {
     id: 'sandevistan_dynalar',
@@ -341,30 +590,32 @@ const Items = {
     category: 'cyberware',
     type: 'cyberware',
     slotType: 'os',
-    weight: 2.0,
+    weight: 1.5,
     stackable: false,
     maxStack: 1,
     nativeId: 'Items.SandevistanC1',
     usable: true,
     useable: true,
     icon: '⚡',
-    description: 'Reflex booster accelerating neural transmission.'
+    image: './assets/items/rp_sandevistan.svg',
+    description: 'Reflex booster accelerating neural reaction speed.'
   },
   kiroshi_optics_v1: {
     id: 'kiroshi_optics_v1',
     name: 'kiroshi_optics_v1',
-    label: 'Kiroshi Optical Suite v1',
+    label: 'Kiroshi Optical Suite',
     category: 'cyberware',
     type: 'cyberware',
     slotType: 'ocular',
-    weight: 0.4,
+    weight: 0.3,
     stackable: false,
     maxStack: 1,
     nativeId: 'Items.KiroshiOptics',
     usable: true,
     useable: true,
     icon: '👁️',
-    description: 'High-definition cybernetic eye with threat evaluation and HUD integration.'
+    image: './assets/items/rp_kiroshi.svg',
+    description: 'High-definition cybernetic optic with scanner integration.'
   },
 
   // --- IDENTITY & ROLEPLAY TOOLS ---
@@ -381,7 +632,8 @@ const Items = {
     usable: true,
     useable: true,
     icon: '🪪',
-    description: 'Official Night City Citizen Identification smart chip.'
+    image: './assets/items/rp_id_card.svg',
+    description: 'Official Night City Citizen ID chip. Click USE to present your identity nearby.'
   },
   drive_license: {
     id: 'drive_license',
@@ -396,7 +648,8 @@ const Items = {
     usable: true,
     useable: true,
     icon: '🚗',
-    description: 'Driver qualification badge registered with NC Transport Authority.'
+    image: './assets/items/rp_drive_license.svg',
+    description: 'Driver permit registered with NC Transport Authority.'
   },
   cyber_phone: {
     id: 'cyber_phone',
@@ -404,14 +657,15 @@ const Items = {
     label: 'Agent NetWatch Holo-Phone',
     category: 'tool',
     type: 'item',
-    weight: 0.3,
+    weight: 0.25,
     stackable: false,
     maxStack: 1,
     nativeId: 'Items.CyberPhone',
     usable: true,
     useable: true,
     icon: '📱',
-    description: 'Encrypted communication agent linking citizen to NightNet.'
+    image: './assets/items/rp_cyber_phone.svg',
+    description: 'Encrypted holo-agent linking citizen to NightNet (/tweet & /911 dispatch).'
   },
   cyber_lockpick: {
     id: 'cyber_lockpick',
@@ -426,7 +680,8 @@ const Items = {
     usable: true,
     useable: true,
     icon: '🔓',
-    description: 'Handheld decryption tool used to bypass low-security vehicle and apartment locks.'
+    image: './assets/items/rp_lockpick.svg',
+    description: 'Handheld decryption tool used to unlock nearby vehicles.'
   },
   repair_kit: {
     id: 'repair_kit',
@@ -434,14 +689,15 @@ const Items = {
     label: 'Vehicle Diagnostic & Repair Kit',
     category: 'tool',
     type: 'item',
-    weight: 5.0,
-    stackable: false,
-    maxStack: 2,
+    weight: 3.5,
+    stackable: true,
+    maxStack: 3,
     nativeId: 'Items.RepairKit',
     usable: true,
     useable: true,
     icon: '🔧',
-    description: 'Comprehensive toolkit for servicing engines, tires, and bodywork.'
+    image: './assets/items/rp_repair_kit.svg',
+    description: 'Portable toolkit to repair nearby or current vehicle chassis & engine.'
   },
   money: {
     id: 'money',
@@ -456,9 +712,48 @@ const Items = {
     usable: false,
     useable: false,
     icon: '💵',
+    image: './assets/items/rp_eddies.svg',
     description: 'Universal physical currency bills accepted across Night City.'
   }
 };
+
+// Merge full punkmp.wiki catalog dynamically (preserving curated keys)
+let PunkmpCatalog = {};
+try {
+  const catalogPath = path.join(__dirname, 'punkmp_catalog.json');
+  if (fs.existsSync(catalogPath)) {
+    PunkmpCatalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+  }
+} catch (err) {
+  console.warn('[gcyber-inventory] Could not load punkmp_catalog.json:', err.message);
+}
+
+const Items = Object.assign({}, PunkmpCatalog, CuratedItems);
+
+// Build fast lookup indices for slug / TweakDB record resolution
+const LookupIndex = new Map();
+for (const [key, def] of Object.entries(Items)) {
+  LookupIndex.set(key.toLowerCase(), def);
+  LookupIndex.set(key.toLowerCase().replace(/-/g, '_'), def);
+  if (def.nativeId) {
+    LookupIndex.set(def.nativeId.toLowerCase(), def);
+  }
+}
+
+Object.defineProperty(Items, 'Resolve', {
+  enumerable: false,
+  value: function resolveItem(keyOrRecord) {
+    if (!keyOrRecord) return null;
+    if (Items[keyOrRecord]) return Items[keyOrRecord];
+    const clean = String(keyOrRecord).trim().toLowerCase();
+    return LookupIndex.get(clean) || LookupIndex.get(clean.replace(/-/g, '_')) || null;
+  }
+});
+
+Object.defineProperty(Items, 'Curated', {
+  enumerable: false,
+  value: CuratedItems
+});
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = Items;
